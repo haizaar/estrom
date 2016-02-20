@@ -1,0 +1,44 @@
+{
+   "workers": [
+      {
+         "type": "router",
+         "realms": [
+            {
+               "name": "estrom",
+               "roles": [
+                  {
+                     "name": "anonymous",
+                     "permissions": [
+                        {
+                           "uri": "*",
+                           "publish": true,
+                           "subscribe": true,
+                           "call": true,
+                           "register": true
+                        }
+                     ]
+                  }
+               ]
+            }
+         ],
+         "transports": [
+            {
+               "type": "web",
+               "endpoint": {
+                  "type": "tcp",
+                  "port": 7000
+               },
+               "paths": {
+                  "/": {
+                     "type": "static",
+                     "directory": "../web"
+                  },
+                  "ws": {
+                     "type": "websocket"
+                  }
+               }
+            }
+         ]
+      }
+   ]
+}
