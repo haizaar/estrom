@@ -19,15 +19,19 @@ class Component(ApplicationSession):
     def onJoin(self, details):
 
         index = "events"
-        query = "foo AND bar"
+        query = "foo"
 
-        sid = yield from self.call("com.estrom.register_query", index, query)
+        sid = yield from self.call(settings.crossbar.ns + ".register_query", index, query)
+        sid = sid.decode()
         print("got sid {}".format(sid))
-        rindex = sid.decode().split("_")[0]
-        rindex = base64.b32decode(self.pad(rindex).encode()).decode()
-        print(rindex)
-        assert rindex == index
-        self.leave()
+
+        yield from self.subscribe(lambda x: print(x), settings.crossbar.ns + "." + sid)
+
+        # rindex = sid.decode().split("_")[0]
+        # rindex = base64.b32decode(self.pad(rindex).encode()).decode()
+        # print(rindex)
+        # assert rindex == index
+        # self.leave()
 
     def onDisconnect(self):
         asyncio.get_event_loop().stop()

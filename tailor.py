@@ -18,7 +18,7 @@ class Component(ApplicationSession):
         self.es = aioes.Elasticsearch(["{}:{}".format(ess.host, ess.port)])
         rv = yield from self.es.ping()  # FIXME: Think about waitng for cluster to be up
 
-        yield from self.register(self.register_query, "com.estrom.register_query")
+        yield from self.register(self.register_query, settings.crossbar.ns + ".register_query")
 
     @asyncio.coroutine
     def register_query(self, index, query):
