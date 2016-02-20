@@ -11,5 +11,6 @@ settings = DotDict({
     "es": {
         "host": "localhost",
         "port": 9200,
+        "percolator_type": ".percolator",
     }
 })

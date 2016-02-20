@@ -2,6 +2,7 @@
 import base64
 import json
 import asyncio
+import aioes
 from hashlib import md5
 import gzip
 
@@ -9,11 +10,14 @@ from autobahn.asyncio.wamp import ApplicationSession, ApplicationRunner
 
 from settings import settings
 
-
 class Component(ApplicationSession):
 
     @asyncio.coroutine
     def onJoin(self, details):
+        ess = settings.es
+        self.es = aioes.Elasticsearch(["{}:{}".format(ess.host, ess.port)])
+        rv = yield from self.es.ping()  # FIXME: Think about waitng for cluster to be up
+
         yield from self.register(self.register_query, "com.estrom.register_query")
 
     @asyncio.coroutine
@@ -25,8 +29,11 @@ class Component(ApplicationSession):
                 }
             }
         query = {"query": query}
-        qid = md5(json.dumps(query).encode()).hexdigest().encode()
-        sid = base64.b32encode(index.encode()).decode().strip("=").encode() + b"_" + qid
+        qid = md5(json.dumps(query).encode()).hexdigest()
+
+        yield from self.es.index(index, settings.es.percolator_type, query, id=qid)
+
+        sid = base64.b32encode(index.encode()).decode().strip("=").encode() + b"_" + qid.encode()
         return sid
 
 

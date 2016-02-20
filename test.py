@@ -18,7 +18,7 @@ class Component(ApplicationSession):
     @asyncio.coroutine
     def onJoin(self, details):
 
-        index = "events asfda sasdf ads fasdf"
+        index = "events"
         query = "foo AND bar"
 
         sid = yield from self.call("com.estrom.register_query", index, query)
