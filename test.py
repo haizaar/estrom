@@ -11,9 +11,6 @@ from settings import settings
 
 
 class Component(ApplicationSession):
-    """
-    An application component using the time service.
-    """
 
     @asyncio.coroutine
     def onJoin(self, details):
@@ -21,9 +18,7 @@ class Component(ApplicationSession):
         index = "events"
         query = "foo"
 
-        sid = yield from self.call(settings.crossbar.ns + ".register_query", index, query)
-        sid = sid.decode()
-        print("got sid {}".format(sid))
+        sid = yield from self.call(settings.crossbar.api_ns + ".register_query", index, query)
 
         yield from self.subscribe(lambda x: print(x), settings.crossbar.ns + "." + sid)
 
@@ -38,6 +33,7 @@ class Component(ApplicationSession):
 
     def pad(self, v, length=8):  # TODO: Understand why it's 8
         return v.ljust(math.ceil(float(len(v))/length)*length, "=")
+
 
 if __name__ == '__main__':
     cbs = settings.crossbar

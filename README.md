@@ -13,17 +13,15 @@ match particular subscriptions and distribute them to subscribers.
 
 # Design ideas
 
+For API and pub/sub technologies we'll use chrossbar.io and autobahn-python.
+ElasticSearch will be obviously used for document sieving.
+
 ##  Beater
 The service that will accept streamed documents, pass them through ES percolator to
 understand which "topics" it should be published to and then go and publish the
 document.
 
-## Router
-This is the message broker that delivers messages from Beater instances to Tailor
-instances.
-
-## Tailor
-Tailor provides API for registering new query. It runs md5 over query body and
+It also provides API for registering new query. It runs md5 over query body and
 uses it as a percolation id to register the percolator for the requested index.
 The percolation id is returned to the caller.
 
@@ -39,7 +37,11 @@ identical, but will yield different digests. This is something to address later 
 **NOTE:** md5 is really an overkill here. Even with farmhash64 we will have very
 low collision probability with up to 100,000 registered queries.
 
-## Endless
+## Router
+This is the message broker that delivers messages from Beater instances to Tailor
+instances. We'll just use crossbar.io for this.
+
+## Tailor
 Simple HTTP server that implements one GET request that receives index name
 and query body through URL parameters, calls Tailor to register the query and
 then subscribes to the relevant topic to wait for results.
